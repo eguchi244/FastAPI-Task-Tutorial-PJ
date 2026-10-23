@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session, declarative_base, sessionmaker
 # DB設定（SQLite）
 #
 # NOTE: SQLiteは既定で「作成したスレッドからのみ利用可」だが無効にすること!!
-# FastAPIはリクエストごとに別スレッドで処理するため、check_same_thread": False を指定する必要がある
+# FastAPIはリクエストごとに別スレッドで処理するため、"check_same_thread": False を指定する必要がある
 # ==========================================
 
 DATABASE_URL = "sqlite:///./tasks.db"
@@ -65,6 +65,9 @@ def get_db():
 
     リクエストごとに新しいセッションを作成して、API処理の終了後に
     成否を問わず必ずセッションをクローズ（切断）します。
+
+    Returns:
+        DB操作のためのセッションオブジェクト（API処理の終了後に閉じる）
     """
     # セッション（接続窓口）を新しく作成する
     db = SessionLocal()
@@ -84,14 +87,14 @@ def get_task(task_id: int, db: Session) -> TaskModel:
     指定されたIDのタスクを取得する
 
     Args:
-        task_id (int): 検索対象のタスクID
-        db (Session) : DB操作のためのセッションオブジェクト
+        task_id : 検索対象のタスクID
+        db      : DB操作のためのセッションオブジェクト
 
     Returns:
-        TaskModel: 見つかったタスクオブジェクト
+        見つかったタスクオブジェクト
 
     Raises:
-        HTTPException: タスクが見つからない場合（404 Task Not Found）。
+        HTTPException : タスクが見つからない場合（404 Task Not Found）。
     """
     task = db.get(TaskModel, task_id)
     if task is None:
